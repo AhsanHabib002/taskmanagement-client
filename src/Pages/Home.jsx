@@ -1,9 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Providers/AuthProvider";
+import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import axios from "axios";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
+import Column from "../components/Column";
 
 const Home = () => {
   const { user } = useContext(AuthContext);
@@ -20,37 +22,54 @@ const Home = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axiosSecure.get("/task");
+        const response = await axiosSecure.get(`/task?email=${user.email}`);
         setTasks(response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
-  
-    fetchTasks(); 
-  
-    const interval = setInterval(fetchTasks, 5000); 
-  
-    return () => clearInterval(interval); 
+
+    fetchTasks();
+
+    const interval = setInterval(fetchTasks, 5000);
+
+    return () => clearInterval(interval);
   }, [user]);
+
+  const moveTask = async (taskId, newCategory) => {
+    await axiosPublic.put(`/tasks/${taskId}`, {
+      category: newCategory,
+    });
+  };
+
+  const onDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over) return;
+    moveTask(active.id, over.id);
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!user) {
       Swal.fire("Error!", "You must be logged in to add a task.", "error");
       return;
     }
-  
+
     try {
       const response = await axiosPublic.post("/task", {
         ...newTask,
-        userEmail: user.email, 
+        userEmail: user.email,
         createdAt: new Date().toISOString(),
       });
-  
+
       if (response.status === 200 || response.status === 201) {
-        setNewTask({ title: "", description: "", dueDate: "", category: "To-Do" });
+        setNewTask({
+          title: "",
+          description: "",
+          dueDate: "",
+          category: "To-Do",
+        });
         Swal.fire("Success!", "Task added successfully", "success");
       }
     } catch (error) {
@@ -151,7 +170,7 @@ const Home = () => {
                     </button>
                   </div>
                 </form>
-                
+
                 <div className="modal-action">
                   <form method="dialog">
                     {/* if there is a button in form, it will close the modal */}
@@ -161,6 +180,20 @@ const Home = () => {
               </div>
             </dialog>
           </div>
+        </div>
+        <div className="divider"></div>
+        <div>
+          <DndContext onDragEnd={onDragEnd}>
+            <div className="task-container flex gap-4">
+              {["To-Do", "In Progress", "Done"].map((category) => (
+                <Column
+                key={category}
+                category={category}
+                tasks={tasks.filter((task) => task.category === category)}
+              />
+              ))}
+            </div>
+          </DndContext>
         </div>
       </div>
     </div>
