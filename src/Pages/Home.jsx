@@ -37,7 +37,7 @@ const Home = () => {
   }, [user]);
 
   const moveTask = async (taskId, newCategory) => {
-    await axiosPublic.put(`/tasks/${taskId}`, {
+    await axiosPublic.put(`/task/${taskId}`, {
       category: newCategory,
     });
   };
@@ -81,7 +81,7 @@ const Home = () => {
   return (
     <div className="px-[120px] my-[90px]">
       <div>
-        <div className="flex gap-3 items-center">
+        <div className="flex flex-col gap-3 items-center md:flex-row">
           <img
             className="w-[120px] h-[120px] object-cover rounded-full"
             src={user.photoURL}
@@ -118,6 +118,7 @@ const Home = () => {
                       placeholder="Title"
                       required
                       value={newTask.title}
+                      maxLength="50"
                       onChange={(e) =>
                         setNewTask({ ...newTask, title: e.target.value })
                       }
@@ -131,6 +132,7 @@ const Home = () => {
                       className="textarea w-full"
                       placeholder="Description"
                       value={newTask.description}
+                      maxLength="200"
                       onChange={(e) =>
                         setNewTask({ ...newTask, description: e.target.value })
                       }
@@ -184,7 +186,7 @@ const Home = () => {
         <div className="divider"></div>
         <div>
           <DndContext onDragEnd={onDragEnd}>
-            <div className="task-container flex gap-4">
+            <div className="task-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {["To-Do", "In Progress", "Done"].map((category) => (
                 <Column
                 key={category}
