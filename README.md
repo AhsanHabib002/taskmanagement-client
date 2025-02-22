@@ -45,38 +45,39 @@ Ensure you have the following installed:
    ```sh
    git clone <your-repo-url>
    cd backend
-Install dependencies:
-sh
-Copy
-Edit
+2. Install dependencies:
+```sh
+
 npm install
-Create a .env file in the root directory and configure the following:
-ini
-Copy
-Edit
+```
+3. Create a .env file in the root directory and configure the following:
+```ini
 MONGO_URI=your-mongodb-connection-string
 JWT_SECRET=your-jwt-secret
-Start the backend server:
-sh
-Copy
-Edit
+```
+4. Start the backend server:
+```sh
+
 npm start
+```
+
 🔹 Frontend Setup
 Navigate to the frontend directory:
-sh
-Copy
-Edit
+```sh
+
 cd frontend
+```
 Install dependencies:
-sh
-Copy
-Edit
+```sh
+
 npm install
+```
 Start the development server:
-sh
-Copy
-Edit
+```sh
+
 npm start
+```
+
 📌 API & Authentication
 Users authenticate via Firebase Authentication.
 The backend uses JWT for secure API requests.
